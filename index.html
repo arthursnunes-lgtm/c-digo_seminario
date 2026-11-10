@@ -1,0 +1,82 @@
+<h1>cadastro de usuarios</h1>
+
+<form onsubmit="cadastrar(event)">
+    <label for="email">E-mail:</label>
+    <input type="email" placeholder="digite o email" id="email" required>
+
+    <label for="senha">Senha:</label>
+    <input type="password" placeholder="digite a SENHA" id="senha" required minlength="6">
+
+    <label for="cpf">CPF:</label>
+    <input type="text" placeholder="digite o CPF (000.000.000-00)" id="cpf" required pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}">
+
+    <label for="nascimento">Data de Nascimento:</label>
+    <input type="text" placeholder="DD/MM/AAAA" id="nascimento" required pattern="\d{2}/\d{2}/\d{4}">
+
+    <label for="genero">Gênero:</label>
+    <input type="text" placeholder="digite o gênero" id="genero" required>
+
+    <button type="submit">cadastrar</button>
+    <button type="button" onclick="visualizar()">visualizar</button>
+</form>
+
+<div id="lista"></div>
+
+<script>
+    let _usuarios = JSON.parse(localStorage.getItem('usuarios')) || []
+
+    function cadastrar(e) {
+        e.preventDefault()
+
+        let email = document.getElementById('email').value
+        let senha = document.getElementById('senha').value
+        let cpf = document.getElementById('cpf').value
+        let nascimento = document.getElementById('nascimento').value
+        let genero = document.getElementById('genero').value
+
+        let usuario = {
+            'email': email,
+            senha,
+            cpf,
+            nascimento,
+            genero
+        }
+
+        let existe = false
+        _usuarios.forEach((usuario) => {
+            if (email === usuario.email || cpf === usuario.cpf) {
+                existe = true
+            }
+        })
+
+        if (existe) {
+            alert('usuario ou CPF ja existe')
+        } else {
+            _usuarios.push(usuario)
+            localStorage.setItem('usuarios', JSON.stringify(_usuarios))
+            alert('Usuário cadastrado com sucesso!')
+            
+            document.getElementById('email').value = ''
+            document.getElementById('senha').value = ''
+            document.getElementById('cpf').value = ''
+            document.getElementById('nascimento').value = ''
+            document.getElementById('genero').value = ''
+        }
+    }
+
+    function visualizar() {
+        let lista = document.getElementById('lista')
+        lista.innerHTML = ''
+
+        _usuarios.forEach((usuario, i) => {
+            lista.innerHTML += `email: ${usuario.email} | CPF: ${usuario.cpf} | Nasc: ${usuario.nascimento} | Gênero: ${usuario.genero} <br>
+                <button onclick="deletar(${i})">deletar</button><br><br>`
+        })
+    }
+
+    function deletar(i) {
+        _usuarios.splice(i, 1)
+        localStorage.setItem('usuarios', JSON.stringify(_usuarios))
+        visualizar()
+    }
+</script>
